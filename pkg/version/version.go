@@ -15,6 +15,7 @@
 package version
 
 import (
+	"fmt"
 	"os"
 	"runtime/debug"
 )
@@ -43,4 +44,12 @@ func GetVersionInfo() VersionInfo {
 		Version:   os.Getenv("VERSION"),
 		GitCommit: getVcsRevision(),
 	}
+}
+
+func (v VersionInfo) String() string {
+	var vMsg string
+	if v.Version != "" {
+		vMsg = fmt.Sprintf(" version %s", v.Version)
+	}
+	return fmt.Sprintf("janus-idp.io/backstage-operator%s (%s)", vMsg, v.GitCommit)
 }

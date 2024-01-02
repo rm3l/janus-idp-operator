@@ -62,7 +62,7 @@ func init() {
 func main() {
 	if len(os.Args) >= 2 && os.Args[1] == "version" {
 		versionCmd.Parse(os.Args[2:])
-		showVersionInfo(versionInfo)
+		fmt.Println(versionInfo)
 		return
 	}
 
@@ -86,7 +86,7 @@ func main() {
 
 	ctrl.SetLogger(zap.New(zap.UseFlagOptions(&opts)))
 
-	showVersionInfo(versionInfo)
+	setupLog.Info(versionInfo.String())
 
 	mgr, err := ctrl.NewManager(ctrl.GetConfigOrDie(), ctrl.Options{
 		Scheme:                 scheme,
@@ -151,14 +151,6 @@ func main() {
 		setupLog.Error(err, "problem running manager")
 		os.Exit(1)
 	}
-}
-
-func showVersionInfo(info version.VersionInfo) {
-	var vMsg string
-	if versionInfo.Version != "" {
-		vMsg = fmt.Sprintf(" version %s", versionInfo.Version)
-	}
-	fmt.Printf("janus-idp.io/backstage-operator%s (%s)\n", vMsg, versionInfo.GitCommit)
 }
 
 // Automatically detects if the cluster the operator running on is OpenShift
