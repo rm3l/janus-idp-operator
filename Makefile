@@ -128,7 +128,7 @@ test: manifests generate fmt vet envtest ## Run tests. We need LOCALBIN=$(LOCALB
 
 .PHONY: build
 build: generate fmt vet ## Build manager binary.
-	go build -o bin/manager main.go
+	go build -o bin/manager .
 
 .PHONY: run
 run: manifests generate fmt vet build ## Run a controller from your host.

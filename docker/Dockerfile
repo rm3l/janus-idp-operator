@@ -50,7 +50,7 @@ RUN go mod download
 # Build
 # hadolint ignore=SC3010
 RUN export ARCH="$(uname -m)" && if [[ ${ARCH} == "x86_64" ]]; then export ARCH="amd64"; elif [[ ${ARCH} == "aarch64" ]]; then export ARCH="arm64"; fi && \
-    CGO_ENABLED=1 GOOS=linux GOARCH=${ARCH} go build -a -o manager main.go
+    CGO_ENABLED=1 GOOS=linux GOARCH=${ARCH} go build -a -o manager .
 
 # NOTE: ubi-micro will not be FIPS compliant, if openssl is not installed
 #@follow_tag(registry.redhat.io/ubi9/ubi-micro:latest)
