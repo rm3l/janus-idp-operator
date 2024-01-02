@@ -41,6 +41,7 @@ import (
 )
 
 var (
+	versionCmd  = flag.NewFlagSet("version", flag.ExitOnError)
 	versionInfo = version.GetVersionInfo()
 )
 
@@ -59,6 +60,12 @@ func init() {
 }
 
 func main() {
+	if len(os.Args) >= 2 && os.Args[1] == "version" {
+		versionCmd.Parse(os.Args[2:])
+		showVersionInfo(versionInfo)
+		return
+	}
+
 	var metricsAddr string
 	var enableLeaderElection bool
 	var probeAddr string
