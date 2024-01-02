@@ -18,8 +18,10 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"os"
 
+	"janus-idp.io/backstage-operator/pkg/version"
 	// Import all Kubernetes client auth plugins (e.g. Azure, GCP, OIDC, etc.)
 	// to ensure that exec-entrypoint and run can make use of them.
 	_ "k8s.io/client-go/plugin/pkg/client/auth"
@@ -36,6 +38,10 @@ import (
 	backstageiov1alpha1 "janus-idp.io/backstage-operator/api/v1alpha1"
 	controller "janus-idp.io/backstage-operator/controllers"
 	//+kubebuilder:scaffold:imports
+)
+
+var (
+	versionInfo = version.GetVersionInfo()
 )
 
 var (
@@ -72,6 +78,8 @@ func main() {
 	flag.Parse()
 
 	ctrl.SetLogger(zap.New(zap.UseFlagOptions(&opts)))
+
+	showVersionInfo(versionInfo)
 
 	mgr, err := ctrl.NewManager(ctrl.GetConfigOrDie(), ctrl.Options{
 		Scheme:                 scheme,
@@ -136,6 +144,14 @@ func main() {
 		setupLog.Error(err, "problem running manager")
 		os.Exit(1)
 	}
+}
+
+func showVersionInfo(info version.VersionInfo) {
+	var vMsg string
+	if versionInfo.Version != "" {
+		vMsg = fmt.Sprintf(" version %s", versionInfo.Version)
+	}
+	fmt.Printf("janus-idp.io/backstage-operator%s (%s)\n", vMsg, versionInfo.GitCommit)
 }
 
 // Automatically detects if the cluster the operator running on is OpenShift
