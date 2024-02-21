@@ -36,9 +36,9 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          # Check out PR HEAD instead of the default merge commit (detached).
+          # Check out PR HEAD ref instead of the default merge commit (detached).
           # Otherwise, it will be impossible for the bundle-diff-checker step to auto-push any outstanding changes.
-          ref: ${{ github.event.pull_request.head.sha }}
+          ref: ${{ github.event.pull_request.head.ref }}
 
       # check changes in this commit for regex include and exclude matches; pipe to an env var
       - name: Check for changes to build
