@@ -11,46 +11,54 @@ The Operator provides clear and flexible configuration options to satisfy a wide
 You’ll need a Kubernetes or OpenShift cluster. You can use [Minikube](https://minikube.sigs.k8s.io/docs/) or [KIND](https://sigs.k8s.io/kind) for local testing, or deploy to a remote cluster.
 **Note:** Your controller will automatically use the current context in your kubeconfig file (i.e. whatever cluster `kubectl cluster-info` shows).
 
-To test it on minikube from the source code:
+To test it on minikube:
 
 Both **kubectl** and **minikube** must be installed. See [tools](https://kubernetes.io/docs/tasks/tools/).
 
-1.  Get your copy of Operator from GitHub: 
+1.  Deploy the Operator: 
 ```sh
-git clone https://github.com/janus-idp/operator
+kubectl apply -f https://raw.githubusercontent.com/janus-idp/operator/main/deploy/rhdh-operator.yaml
 ```
-2. Deploy Operator on the minikube cluster:
-```sh
-cd <your-rhdh-operator-project-dir>
-make deploy
-```
-you can check if the Operator pod is up by running 
+
+You can check if the Operator pod is up by running: 
 ```sh
 kubectl get pods -n backstage-system
-It should be something like:
+```
+
+The output  should be something like:
+```sh
 NAME                                           READY   STATUS    RESTARTS   AGE
 backstage-controller-manager-cfc44bdfd-xzk8g   2/2     Running   0          32s
 ```
-3. Create Backstage Custom resource on some namespace (make sure this namespace exists)
+
+2. Create Backstage Custom resource on some namespace (make sure this namespace exists)
 ```sh
 kubectl -n <your-namespace> apply -f examples/bs1.yaml
 ```
-you can check if the Operand pods are up by running
+
+You can check if the Operand pods are up by running:
 ```sh
 kubectl get pods -n <your-namespace>
-It should be something like:
-NAME                         READY   STATUS    RESTARTS   AGE
-backstage-85fc4657b5-lqk6r   1/1     Running   0          78s
-backstage-psql-bs1-0         1/1     Running   0          79s
-
 ```
-4. Tunnel Backstage Service and get URL for access Backstage
+
+The output should be something like:
+```
+NAME                         READY   STATUS    RESTARTS   AGE
+backstage-bs1-85fc4657b5-lqk6r   1/1     Running   0          78s
+backstage-psql-bs1-0         1/1     Running   0          79s
+```
+
+3. Tunnel Backstage Service and get URL for access Backstage
 ```sh
 minikube service -n <your-namespace> backstage --url
-Output:
->http://127.0.0.1:53245
 ```
-5. Access your Backstage instance in your browser using this URL. 
+
+The output should look like:
+```
+http://127.0.0.1:53245
+```
+
+4. Access your Backstage instance in your browser using this URL. 
 
 ## More documentation
 
