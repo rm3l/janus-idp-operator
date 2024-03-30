@@ -182,6 +182,10 @@ ifndef ignore-not-found
   ignore-not-found = false
 endif
 
+ifndef deployment-manifest-path
+  deployment-manifest-path = deploy/rhdh-operator.yaml
+endif
+
 .PHONY: install
 install: manifests kustomize ## Install CRDs into the K8s cluster specified in ~/.kube/config.
 	$(KUSTOMIZE) build config/crd | kubectl apply -f -
@@ -189,6 +193,14 @@ install: manifests kustomize ## Install CRDs into the K8s cluster specified in ~
 .PHONY: uninstall
 uninstall: manifests kustomize ## Uninstall CRDs from the K8s cluster specified in ~/.kube/config. Call with ignore-not-found=true to ignore resource not found errors during deletion.
 	$(KUSTOMIZE) build config/crd | kubectl delete --ignore-not-found=$(ignore-not-found) -f -
+
+.PHONY: deployment-manifest
+deployment-manifest: manifests kustomize ## Generate manifest to deploy operator.
+	cd config/manager && $(KUSTOMIZE) edit set image controller=$(IMG)
+	$(KUSTOMIZE) build config/default > rhdh-operator-${VERSION}.yaml
+	@mkdir -p "$$(dirname $(deployment-manifest-path))"
+	@install -m 0644 --preserve-timestamps rhdh-operator-${VERSION}.yaml "$(deployment-manifest-path)"
+	@echo "Generated operator manifest: rhdh-operator-${VERSION}.yaml => $(deployment-manifest-path)"
 
 .PHONY: deploy
 deploy: manifests kustomize ## Deploy controller to the K8s cluster specified in ~/.kube/config.
@@ -401,10 +413,3 @@ show-img:
 
 show-container-engine:
 	@echo -n $(CONTAINER_ENGINE)
-
-.PHONY: deployment-manifest
-deployment-manifest: manifests kustomize ## Generate manifest to deploy operator.
-	cd config/manager && $(KUSTOMIZE) edit set image controller=$(IMG)
-	$(KUSTOMIZE) build config/default > rhdh-operator-${VERSION}.yaml
-	@echo "Generated operator script rhdh-operator-${VERSION}.yaml"
-
