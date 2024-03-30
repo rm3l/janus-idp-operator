@@ -60,13 +60,13 @@ jobs:
         with:
           go-version-file: 'go.mod'
 
-      - name: Check for outdated bundle
+      - name: Check for outdated manifests
         id: bundle-diff-checker
         run: |
-          make bundle
+          make deployment-manifest bundle
           git status --porcelain
           # Since operator-sdk 1.26.0, `make bundle` changes the `createdAt` field from the bundle every time we run it.
-          # The `git diff` below checks if only the createdAt field has changed. If is the only change, it is ignored.
+          # The `git diff` below checks if only the createdAt field has changed. If this is the only change, it is ignored.
           # Inspired from https://github.com/operator-framework/operator-sdk/issues/6285#issuecomment-1415350333
           echo "MANIFESTS_CHANGED=$(if git diff --quiet -I'^    createdAt: ' bundle; then echo "false"; else echo "true"; fi)" >> $GITHUB_OUTPUT
 
@@ -79,11 +79,11 @@ jobs:
           git pull --rebase --autostash
           git add -A .
           git commit \
-            -m "Regenerate bundle manifests" \
+            -m "Regenerate bundle and deployment manifests" \
             -m "Co-authored-by: $GITHUB_ACTOR <$GITHUB_ACTOR@users.noreply.github.com>"
           git push
 
-      - name: Comment on PR if bundle manifests were updated
+      - name: Comment on PR if manifests were updated
         uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7
         if: ${{ !cancelled() && steps.bundle-diff-checker.outputs.MANIFESTS_CHANGED == 'true' }}
         continue-on-error: true
