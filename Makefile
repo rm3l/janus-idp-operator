@@ -203,13 +203,12 @@ deployment-manifest: manifests kustomize ## Generate manifest to deploy operator
 	@echo "Generated operator manifest: rhdh-operator-${VERSION}.yaml => $(deployment-manifest-path)"
 
 .PHONY: deploy
-deploy: manifests kustomize ## Deploy controller to the K8s cluster specified in ~/.kube/config.
-	cd config/manager && $(KUSTOMIZE) edit set image controller=$(IMG)
-	$(KUSTOMIZE) build config/default | kubectl apply -f -
+deploy: deployment-manifest ## Deploy controller to the K8s cluster specified in ~/.kube/config.
+	kubectl apply -f "$(deployment-manifest-path)"
 
 .PHONY: undeploy
-undeploy: ## Undeploy controller from the K8s cluster specified in ~/.kube/config. Call with ignore-not-found=true to ignore resource not found errors during deletion.
-	$(KUSTOMIZE) build config/default | kubectl delete --ignore-not-found=$(ignore-not-found) -f -
+undeploy: deployment-manifest ## Undeploy controller from the K8s cluster specified in ~/.kube/config. Call with ignore-not-found=true to ignore resource not found errors during deletion.
+	kubectl delete --ignore-not-found=$(ignore-not-found) -f "$(deployment-manifest-path)"
 
 ##@ Build Dependencies
 
